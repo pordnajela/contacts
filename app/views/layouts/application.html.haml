@@ -12,4 +12,15 @@
       %p.alert.alert-success= notice
     - if alert
       %p.alert.alert-danger= alert
+    %nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      %button.navbar-toggler{"aria-controls" => "navbarTogglerDemo01", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarTogglerDemo01", "data-toggle" => "collapse", :type => "button"}
+        %span.navbar-toggler-icon
+      #navbarTogglerDemo01.collapse.navbar-collapse
+        %a.navbar-brand{:href => "#"} Contactos
+      - if current_user
+        .my-2.my-lg-0
+          = link_to "Cerrar sesión", destroy_user_session_path, method: :delete
+      - else
+        .my-2.my-lg-0
+          = link_to "Iniciar sesión", new_user_session_path, method: :get
     = yield

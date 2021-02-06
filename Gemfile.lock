@@ -79,6 +79,7 @@ GEM
     concurrent-ruby (1.1.8)
     connection_pool (2.2.3)
     crass (1.0.6)
+    credit_card_detector (0.4)
     database_cleaner-active_record (2.0.0)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
@@ -303,6 +304,7 @@ DEPENDENCIES
   byebug
   capybara (>= 2.15)
   charlock_holmes
+  credit_card_detector
   database_cleaner-active_record
   devise
   dotenv-rails
