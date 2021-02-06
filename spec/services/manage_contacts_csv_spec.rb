@@ -6,7 +6,7 @@ RSpec.describe ManageContactsCsv do
   let(:user2) { create(:user) }
 
   context "call" do
-    it '' do
+    it 'upload csv' do
       file_path = "spec/fixtures/contacts.csv"
       result = ::ManageContactsCsv.new({file_path: file_path, user: user}).call
       expect(result.success?).to eq(true)

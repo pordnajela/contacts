@@ -1,0 +1,14 @@
+.row.mb-1
+  = link_to "Listar todos los contactos", list_contacts_path, method: :get
+
+.row.mb-1
+  = link_to "Listar archivos cargados", list_contacts_path, method: :get
+
+-# .row
+  = link_to "Cargar csv con contactos", new_user_session_path, method: :get
+
+.form-group
+  = form_for :upload_csv, url: contacts_manage_csv_path, html: { multipart: true, id: 'upload_csv_form' } do |f|
+    .custom-file
+      = f.file_field :file, accept: ".csv"
+    = f.submit "Submit", id: 'uploadButton', class: 'btn btn-success'

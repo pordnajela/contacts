@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   scope :contacts do
     get '/' => 'contacts#index', as: :contacts
-    post 'manage_csv' => 'contacst#manage_csv', as: :contacts_manage_csv
+    get '/list' => 'contacts#list', as: :list_contacts
+    post 'manage_csv' => 'contacts#manage_csv', as: :contacts_manage_csv
   end
 end

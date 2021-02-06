@@ -23,4 +23,5 @@
       - else
         .my-2.my-lg-0
           = link_to "Iniciar sesión", new_user_session_path, method: :get
-    = yield
+    .container-fluid
+      = yield

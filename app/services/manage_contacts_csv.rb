@@ -19,28 +19,32 @@ class ManageContactsCsv
       file_content = file_content.gsub(';', ',')
 
       headers = ::CSV.parse(file_content).first
-      
-      ::CSV.parse(file_content, converters: nil, headers: true) do |row|
-        result = []
+      validate_headers = %w{nombre fecha_de_nacimiento telefono direccion tarjeta_de_credito email}
 
-        name = validate_name(row["nombre"])
-        result.push(name)
-        birth_date = validate_birth_date(row["fecha_de_nacimiento"])
-        result.push(birth_date)
-        phone_number = validate_phone_number(row["telefono"])
-        result.push(phone_number)
-        address = validate_address(row["direccion"])
-        result.push(address)
-        credit_card = validate_credit_card(row["tarjeta_de_credito"])
-        result.push(credit_card)
-        email = validate_email(row["email"])
-        result.push(email)
-        
-        Contact.create(user_id: @user.id, email: email, name: name, phone_number: phone_number, address: address, credit_card: Digest::SHA256.new.hexdigest(credit_card.last), franchise: credit_card.first, birth_date: birth_date, last_four_credt_card_numbers: credit_card.last.last(4)) unless result.include?(nil)
-
+      if headers == validate_headers
+        ::CSV.parse(file_content, converters: nil, headers: true) do |row|
+          result = []
+  
+          name = validate_name(row["nombre"])
+          result.push(name)
+          birth_date = validate_birth_date(row["fecha_de_nacimiento"])
+          result.push(birth_date)
+          phone_number = validate_phone_number(row["telefono"])
+          result.push(phone_number)
+          address = validate_address(row["direccion"])
+          result.push(address)
+          credit_card = validate_credit_card(row["tarjeta_de_credito"])
+          result.push(credit_card)
+          email = validate_email(row["email"])
+          result.push(email)
+          
+          Contact.create(user_id: @user.id, email: email, name: name, phone_number: phone_number, address: address, credit_card: Digest::SHA256.new.hexdigest(credit_card.last), franchise: credit_card.first, birth_date: birth_date, last_four_credt_card_numbers: credit_card.last.last(4)) unless result.include?(nil)
+  
+        end
+        return_message(true, {})
+      else
+        return_message(false, {error: "Nombre de columnas incorrectas"})
       end
-
-      return_message(true, {})
     rescue => e
       Rails.logger.error e.message
       Rails.logger.error e.backtrace.join("\n")
