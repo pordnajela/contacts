@@ -6,7 +6,7 @@ require File.expand_path('../config/environment', __dir__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
 require 'devise'
-# require 'database_cleaner'
+require 'support/database_cleaner'
 require 'capybara/rspec'
 require 'sidekiq/testing'
 require 'rake'
