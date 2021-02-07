@@ -14,3 +14,7 @@
         %td= user_contact.address
         %td= user_contact.franchise
         %td= "****#{user_contact.last_four_credt_card_numbers}"
+        %td= user_contact.contact_file.name
+
+.row
+  = will_paginate @user_contacts, renderer: BootstrapPagination::Rails

@@ -1,0 +1,14 @@
+%table.table
+  %thead
+    %tr
+      - @headers.each do |header|
+        %th{:scope => "col"}
+          = header.humanize
+  %tbody
+    - @contact_files.each do |user_contact|
+      %tr
+        %td= user_contact.name
+        %td= user_contact.status
+
+.row
+  = will_paginate @contact_files, renderer: BootstrapPagination::Rails

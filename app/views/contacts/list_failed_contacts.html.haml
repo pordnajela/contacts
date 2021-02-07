@@ -1,0 +1,20 @@
+%table.table
+  %thead
+    %tr
+      - @headers.each do |header|
+        %th{:scope => "col"}
+          = header.humanize
+  %tbody
+    - @user_failed_contacts.each do |user_contact|
+      %tr
+        %td= user_contact.email ? user_contact.email : "INCORRECTO"
+        %td= user_contact.name ? user_contact.name : "INCORRECTO"
+        %td= user_contact.birth_date ? user_contact.birth_date : "INCORRECTO"
+        %td= user_contact.phone_number ? user_contact.phone_number : "INCORRECTO"
+        %td= user_contact.address ? user_contact.address : "INCORRECTO"
+        %td= user_contact.franchise ? user_contact.franchise : "INCORRECTO"
+        %td= "****#{user_contact.last_four_credt_card_numbers}" ? user_contact.last_four_credt_card_numbers : "INCORRECTO"
+        %td= user_contact.contact_file.name ? user_contact.contact_file.name : "INCORRECTO"
+
+.row
+  = will_paginate @user_failed_contacts, renderer: BootstrapPagination::Rails

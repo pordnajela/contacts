@@ -10,13 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_06_200633) do
+ActiveRecord::Schema.define(version: 2021_02_07_004320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "contact_files", force: :cascade do |t|
+    t.string "name"
+    t.string "status"
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_contact_files_on_user_id"
+  end
+
   create_table "contacts", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.string "email"
     t.string "name"
     t.string "phone_number"
@@ -28,6 +34,10 @@ ActiveRecord::Schema.define(version: 2021_02_06_200633) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "birth_date"
     t.string "last_four_credt_card_numbers"
+    t.bigint "contact_file_id"
+    t.bigint "user_id"
+    t.boolean "succeeded"
+    t.index ["contact_file_id"], name: "index_contacts_on_contact_file_id"
     t.index ["user_id"], name: "index_contacts_on_user_id"
   end
 
@@ -43,5 +53,4 @@ ActiveRecord::Schema.define(version: 2021_02_06_200633) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "contacts", "users"
 end

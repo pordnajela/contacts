@@ -5,9 +5,11 @@ class ManageContactsCsv
   def initialize(params={})
     @csv_file_path = params[:file_path]
     @user = params[:user]
+    @filename = params[:filename]
   end
 
   def call
+    new_contact_file = ContactFile.create(name: @filename, status: "En espera", user_id: @user.id)
     begin
 
       # Detect file encoding
@@ -20,11 +22,17 @@ class ManageContactsCsv
 
       headers = ::CSV.parse(file_content).first
       validate_headers = %w{nombre fecha_de_nacimiento telefono direccion tarjeta_de_credito email}
+      
+      contacts_added = 0
+      some_errors = []
 
       if headers == validate_headers
         ::CSV.parse(file_content, converters: nil, headers: true) do |row|
+          new_contact_file.update(status: "Procesando")
+          new_contact_file.reload
+
           result = []
-  
+
           name = validate_name(row["nombre"])
           result.push(name)
           birth_date = validate_birth_date(row["fecha_de_nacimiento"])
@@ -35,17 +43,34 @@ class ManageContactsCsv
           result.push(address)
           credit_card = validate_credit_card(row["tarjeta_de_credito"])
           result.push(credit_card)
-          email = validate_email(row["email"])
+          email = validate_email(row["email"], new_contact_file.id)
           result.push(email)
-          
-          Contact.create(user_id: @user.id, email: email, name: name, phone_number: phone_number, address: address, credit_card: Digest::SHA256.new.hexdigest(credit_card.last), franchise: credit_card.first, birth_date: birth_date, last_four_credt_card_numbers: credit_card.last.last(4)) unless result.include?(nil)
+
+          unless result.include?(nil)
+            Contact.create(user_id: @user.id, contact_file_id: new_contact_file.id, email: email, name: name, phone_number: phone_number, address: address, credit_card: Digest::SHA256.new.hexdigest(credit_card.last), franchise: credit_card.first, birth_date: birth_date, last_four_credt_card_numbers: credit_card.last.last(4), succeeded: true)
+            contacts_added = contacts_added + 1
+            some_errors.push(false)
+          else
+            Contact.create(user_id: @user.id, contact_file_id: new_contact_file.id, email: email, name: name, phone_number: phone_number, address: address, credit_card: Digest::SHA256.new.hexdigest(credit_card.last), franchise: credit_card.first, birth_date: birth_date, last_four_credt_card_numbers: credit_card.last.last(4), succeeded: false)
+            some_errors.push(true)
+          end
   
         end
+        
+        if contacts_added > 0
+          new_contact_file.update(status: "Terminado")
+          new_contact_file.reload
+        elsif some_errors.select {|e| e}.count == some_errors.count
+          new_contact_file.update(status: "Fallido")
+          new_contact_file.reload
+        end
+
         return_message(true, {})
       else
         return_message(false, {error: "Nombre de columnas incorrectas"})
       end
     rescue => e
+      new_contact_file.destroy
       Rails.logger.error e.message
       Rails.logger.error e.backtrace.join("\n")
       return_message(false, {})
@@ -54,10 +79,10 @@ class ManageContactsCsv
 
   private
 
-  def validate_email(email)
+  def validate_email(email, contact_file_id)
     email_regex = /\A[^@\s]+@[^@\s]+\z/
     validate_email = email.match(email_regex)
-    existing_contact = Contact.where(user_id: @user.id, email: email).count
+    existing_contact = Contact.where(contact_file_id: contact_file_id, email: email).count
     
     if validate_email && existing_contact == 0
       email

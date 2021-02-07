@@ -69,6 +69,7 @@ gem 'oj'
 gem 'charlock_holmes'
 gem 'credit_card_detector'
 gem 'simple_form'
+gem 'will_paginate-bootstrap'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
